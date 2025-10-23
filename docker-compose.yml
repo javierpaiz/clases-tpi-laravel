@@ -1,0 +1,60 @@
+version: "3.9"
+
+services:
+  app:
+    build: .
+    container_name: laravel_app
+    ports:
+      - "8080:80"
+    volumes:
+      - ./proyectos:/var/www/html
+    depends_on:
+      - db
+    networks:
+      - laravel_net
+
+  db:
+    image: mysql:8.0
+    container_name: mysql80
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: appdb
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: apppass
+    command: --sql-mode="NO_ENGINE_SUBSTITUTION,ALLOW_INVALID_DATES,STRICT_TRANS_TABLES"
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -prootpass || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    networks:
+      - laravel_net
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: phpmyadmin
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PMA_HOST: db
+      PMA_USER: root
+      PMA_PASSWORD: rootpass
+    ports:
+      - "8082:80"
+    volumes:
+      - ./uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
+    networks:
+      - laravel_net
+
+volumes:
+  db_data:
+
+networks:
+  laravel_net:
+    driver: bridge
