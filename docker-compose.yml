@@ -7,7 +7,7 @@ services:
     ports:
       - "8080:80"
     volumes:
-      - ./proyectos:/var/www/html
+      - ./proyectos:/var/www/html:delegated
     depends_on:
       - db
     networks:
