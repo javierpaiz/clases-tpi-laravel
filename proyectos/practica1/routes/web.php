@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DepartamentosController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 
@@ -18,4 +19,4 @@ Route::controller(HomeController::class)->group(function(){
     Route::get('/form','mostrarFormulario')->name('formulario');
     Route::post('/formRecibe','recibirFormulario')->name('recibeForm');
 });
-
+Route::resource("/departamentos", DepartamentosController::class);
